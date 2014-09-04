@@ -13,7 +13,7 @@ module RecordSelectHelper
 
     assert_controller_responds(options[:params][:controller])
 
-    html = link_to_function(name, '', options[:html])
+    html = link_to(name, '#', options[:html])
     html << javascript_tag("new RecordSelect.Dialog(#{options[:html][:id].to_json}, #{url_for(options[:params]).to_json}, {onselect: #{options[:onselect] || ''}})")
 
     return html
@@ -36,8 +36,6 @@ module RecordSelectHelper
     options[:id] ||= name.gsub(/[\[\]]/, '_')
     options[:class] ||= ''
     options[:class] << ' recordselect'
-
-    ActiveSupport::Deprecation.warn 'onchange option is deprecated. Bind recordselect:change event instead.' if options[:onchange]
 
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
@@ -72,8 +70,6 @@ module RecordSelectHelper
     options[:class] ||= ''
     options[:class] << ' recordselect'
 
-    ActiveSupport::Deprecation.warn 'onchange option is deprecated. Bind recordselect:change event instead.' if options[:onchange]
-
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
     record_select_options = {}
@@ -86,23 +82,6 @@ module RecordSelectHelper
     html << javascript_tag("new RecordSelect.Autocomplete(#{options[:id].to_json}, #{url.to_json}, #{record_select_options.to_json});")
 
     return html
-  end
-
-  # Assists with the creation of an observer for the :onchange option of the record_select_field method.
-  # Currently only supports building an Ajax.Request based on the id of the selected record.
-  #
-  # options[:url] should be a hash with all the necessary options *except* :id. that parameter
-  # will be provided based on the selected record.
-  #
-  # Question: if selecting users, what's more likely?
-  #   /users/5/categories
-  #   /categories?user_id=5
-  def record_select_observer(options = {})
-    fn = ""
-    fn << "function(id, value) {"
-    fn <<   "var url = #{url_for(options[:url].merge(:id => ":id:")).to_json}.replace(/:id:/, id);"
-    fn <<   "new Ajax.Request(url);"
-    fn << "}"
   end
 
   # Adds a RecordSelect-based form field for multiple selections. The values submit using a list of hidden inputs.
