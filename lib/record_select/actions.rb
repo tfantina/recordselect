@@ -8,7 +8,7 @@ module RecordSelect
       @count = klass.count
       @count = @count.length if @count.is_a? ActiveSupport::OrderedHash
       pager = ::Paginator.new(@count, record_select_config.per_page) do |offset, per_page|
-        klass.select(record_select_select).includes(record_select_config.include).order(record_select_config.order_by).limit(per_page).offset(offset).to_a
+        (record_select_select ? klass.select(record_select_select) : klass).includes(record_select_config.include).order(record_select_config.order_by).limit(per_page).offset(offset).to_a
       end
       @page = pager.page(params[:page] || 1)
 

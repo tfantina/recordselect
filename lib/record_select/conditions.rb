@@ -32,7 +32,6 @@ module RecordSelect
     # mainly to define extra fields that can be used for 
     # specialized sorting.
     def record_select_select
-      '*'
     end
 
     # generate conditions from params[:search]

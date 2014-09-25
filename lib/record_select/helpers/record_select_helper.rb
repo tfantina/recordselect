@@ -111,10 +111,8 @@ module RecordSelectHelper
     html << hidden_field_tag("#{name}[]", '', :id => nil)
     html << content_tag('ul', '', :class => 'record-select-list');
 
-    # js identifier so we can talk to it.
-    widget = "rs_%s" % name.gsub(/[\[\]]/, '_').chomp('_')
     url = url_for({:action => :browse, :controller => controller.controller_path}.merge(params))
-    html << javascript_tag("#{widget} = new RecordSelect.Multiple(#{options[:id].to_json}, #{url.to_json}, #{record_select_options.to_json});")
+    html << javascript_tag("new RecordSelect.Multiple(#{options[:id].to_json}, #{url.to_json}, #{record_select_options.to_json});")
 
     return html
   end
