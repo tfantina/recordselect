@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "README"
   ]
-  s.files = `git ls-files {app,config,lib,vendor}`.split("\n") + %w[MIT-LICENSE CHANGELOG README]
+  s.files = `git ls-files {app,config,lib,vendor}`.split("\n") + %w[MIT-LICENSE README]
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.test_files = `git ls-files test`.split("\n")
