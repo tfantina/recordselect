@@ -5,7 +5,7 @@ pagination_url_params = params.merge(:controller => controller, :action => :brow
 prev_url = url_for(pagination_url_params.merge(:page => page.prev.number)) if page.prev?
 next_url = url_for(pagination_url_params.merge(:page => page.next.number)) if page.next?
 -%>
-<ol>
+<%= content_tag :ol, :class => ('scrollable' unless record_select_config.pagination?) do %>
   <li class="found"><%= rs_(:records_found, :count => page.pager.count,
 :model => record_select_config.model.model_name.human(:count => page.pager.count).downcase) %></li>
   <% if page.prev? -%>
@@ -21,11 +21,11 @@ next_url = url_for(pagination_url_params.merge(:page => page.next.number)) if pa
     <%= render_record_from_config(record) %>
   </li>
   <% end -%>
-  <% if page.next? -%>
+  <% if record_select_config.pagination? && page.next? -%>
   <li class="pagination next">
   <%= link_to (rs_(:next_items, :count => page.pager.per_page) + " " + image_tag('record_select/next.gif', :alt => rs_(:next))).html_safe,
                         {:url => next_url},
                         {:href => next_url, :method => :get, :remote => true} %>
   </li>
   <% end -%>
-</ol>
+<% end %>

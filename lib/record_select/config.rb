@@ -3,20 +3,14 @@ module RecordSelect
   class Config
     def initialize(klass, options = {})
       @klass = klass
-
       @notify = block_given? ? proc : options[:notify]
-
       @per_page = options[:per_page]
-
       @search_on = [options[:search_on]].flatten unless options[:search_on].nil?
-
       @order_by = options[:order_by]
-
       @full_text_search = options[:full_text_search]
-
       @label = options[:label]
-
       @include = options[:include]
+      @pagination = options.include?(:pagination) ? options[:pagination] : true
     end
     
     def self.js_framework=(framework)
@@ -29,6 +23,10 @@ module RecordSelect
       elsif defined? PrototypeRails
         :prototype
       end
+    end
+
+    def pagination?
+      @pagination
     end
 
     # The model object we're browsing
