@@ -4,12 +4,13 @@ module RecordSelect
     # params => [:page, :search]
     def browse
       conditions = record_select_conditions
-      klass = record_select_model.where(conditions).includes(record_select_includes)
+      user_includes = record_select_includes
+      klass = record_select_model.where(conditions).includes(user_includes)
+      klass = klass.references(user_includes) if Rails::VERSION::MAJOR >= 4 && user_includes.present?
       @count = klass.count
       @count = @count.length if @count.is_a? ActiveSupport::OrderedHash
       pager = ::Paginator.new(@count, record_select_config.per_page) do |offset, per_page|
         search = record_select_select ? klass.select(record_select_select) : klass
-        search = search.references(record_select_config.include) if Rails::VERSION::MAJOR >= 4 && record_select_config.include.present?
         search.includes(record_select_config.include).order(record_select_config.order_by).limit(per_page).offset(offset).to_a
       end
       @page = pager.page(params[:page] || 1)
