@@ -195,6 +195,8 @@ RecordSelect.Abstract = Class.extend({
         _this.container.html(data);
         if (!_this.container.is(':visible')) _this.close();
         else {
+          _this.container.find('.text-input').val(_this.obj.val());
+          RecordSelect.observe(_this.container.find('form').attr('id'));
           _this.show();
           jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }

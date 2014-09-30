@@ -98,6 +98,7 @@ Object.extend(RecordSelect.Abstract.prototype, {
         // needs to be mousedown so the event doesn't get canceled by other code (see issue #26)
         if (!this.container.visible()) this.close();
         else {
+          RecordSelect.observe(this.container.down('form').readAttribute('id'));
           this.show();
           Element.observe(document.body, 'mousedown', this.onbodyclick.bindAsEventListener(this));
         }

@@ -3,10 +3,3 @@
   <%= text_field_tag 'search', params[:search], :autocomplete => 'off', :class => 'text-input' %>
   <%= submit_tag 'search', :class => "search_submit" %>
 </form>
-
-<script type="text/javascript">
-  //<![CDATA[
-  RecordSelect.observe(<%= record_select_search_id.to_json.html_safe %>);
-  //]]>
-</script>
-  
