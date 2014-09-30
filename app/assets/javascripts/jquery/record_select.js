@@ -121,7 +121,7 @@ RecordSelect.select_item = function(item) {
   if (onselect) {
     try {
       var label = jQuery.trim(item.find('label').first().text());
-      if (!label) label = item.text();
+      if (!label) label = item.text().trim();
       onselect(item.attr('id').substr(2), label, e);
     } catch(e) {
       alert(e);
@@ -336,7 +336,7 @@ jQuery.extend(RecordSelect.Abstract.prototype, {
         this.highlight(elem);
         break;
       case 13: // Event.KEY_RETURN
-        if (this.current) this.current.find('a').click();
+        if (this.current) this.current.click();
         break;
       case 39: // Event.KEY_RIGHT
         elem = this.container.find('li.pagination.next');

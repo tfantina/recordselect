@@ -227,9 +227,8 @@ Object.extend(RecordSelect.Abstract.prototype, {
         if (!elem) elem = this.container.getElementsBySelector('ol li.record').first();
         this.highlight(elem);
         break;
-      case Event.KEY_SPACE:
       case Event.KEY_RETURN:
-        if (this.current) this.current.down('a').onclick();
+        if (this.current) this.current.onclick();
         break;
       case Event.KEY_RIGHT:
         elem = this.container.down('li.pagination.next');
