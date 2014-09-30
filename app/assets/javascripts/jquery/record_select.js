@@ -405,6 +405,7 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
     this.container.addClass('record-select-autocomplete');
     this.container.submit(function() {
       rs.hidden_input.val('');
+      rs.obj.removeClass('selected');
     });
 
     // create the hidden input
@@ -436,6 +437,7 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
     // unescaped html missing for label
     this.obj.val(label); 
     this.hidden_input.val(id);
+    this.obj.addClass('selected');
   }
 });
 

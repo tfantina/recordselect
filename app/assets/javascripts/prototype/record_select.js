@@ -298,6 +298,7 @@ RecordSelect.Single.prototype = Object.extend(new RecordSelect.Abstract(), {
     this.container.addClassName('record-select-autocomplete');
     this.container.observe('submit', function() {
       this.hidden_input.value = '';
+      this.obj.removeClassName('selected');
     }.bind(this));
 
     // create the hidden input
@@ -328,6 +329,7 @@ RecordSelect.Single.prototype = Object.extend(new RecordSelect.Abstract(), {
   set: function(id, label) {
     this.obj.value = label.unescapeHTML();
     this.hidden_input.value = id;
+    this.obj.addClassName('selected');
   }
 });
 
