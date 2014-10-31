@@ -37,24 +37,24 @@ module RecordSelect
     # generate conditions from params[:search]
     # override this if you want to customize the search routine
     def record_select_conditions_from_search
-      search_pattern = record_select_config.full_text_search? ? '%?%' : '?%'
-
-      if params[:search] and !params[:search].strip.empty?
+      if params[:search] && !params[:search].strip.empty?
         if record_select_config.full_text_search?
           tokens = params[:search].strip.split(' ')
         else
-          tokens = []
-          tokens << params[:search].strip
+          tokens = [params[:search].strip]
         end
-
-        where_clauses = record_select_config.search_on.collect { |sql| "#{sql} #{record_select_like_operator} ?" }
-        phrase = "(#{where_clauses.join(' OR ')})"
-
-        sql = ([phrase] * tokens.length).join(' AND ')
-        tokens = tokens.collect{ |value| [search_pattern.sub('?', value)] * record_select_config.search_on.length }.flatten
-
-        conditions = [sql, *tokens]
+        search_pattern = record_select_config.full_text_search? ? '%?%' : '?%'
+        build_record_select_conditions(tokens, record_select_like_operator, search_pattern)
       end
+    end
+    
+    def build_record_select_conditions(tokens, operator, search_pattern)
+      where_clauses = record_select_config.search_on.collect { |sql| "#{sql} #{operator} ?" }
+      phrase = "(#{where_clauses.join(' OR ')})"
+      sql = ([phrase] * tokens.length).join(' AND ')
+      
+      tokens = tokens.collect { |token| [search_pattern.sub('?', token)] * record_select_config.search_on.length }.flatten
+      [sql, *tokens]
     end
 
     # generate conditions from the url parameters (e.g. users/browse?group_id=5)
