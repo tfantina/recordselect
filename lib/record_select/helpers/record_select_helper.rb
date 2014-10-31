@@ -169,7 +169,7 @@ module RecordSelectHelper
       # just return the string
       render_record_from_config(record, renderer)
     end
-    description.match(/<label[^>]*>(.*)<\/label>/)[1]
+    description.match(/<label[^>]*>(.*)<\/label>/){ |match| match[1] } || description if description
   end
 
   def assert_controller_responds(controller_name)
