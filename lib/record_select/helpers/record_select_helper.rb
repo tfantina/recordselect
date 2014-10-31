@@ -160,16 +160,16 @@ module RecordSelectHelper
   # if given a controller, searches for a partial in its views path
   def label_for_field(record, controller = self.controller)
     renderer = controller.record_select_config.label
-    case renderer
+    description = case renderer
     when Symbol, String
       # find the <label> element and grab its innerHTML
-      description = render_record_from_config(record, File.join(controller.controller_path, renderer.to_s))
-      description.match(/<label[^>]*>(.*)<\/label>/)[1]
+      render_record_from_config(record, File.join(controller.controller_path, renderer.to_s))
 
     when Proc
       # just return the string
       render_record_from_config(record, renderer)
     end
+    description.match(/<label[^>]*>(.*)<\/label>/)[1]
   end
 
   def assert_controller_responds(controller_name)
