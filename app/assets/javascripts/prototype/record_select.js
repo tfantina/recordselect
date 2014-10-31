@@ -92,6 +92,7 @@ Object.extend(RecordSelect.Abstract.prototype, {
     this.container.show();
     new Ajax.Updater(this.container, this.url, {
       method: 'get',
+      parameters: {search: $F(this.obj)},
       evalScripts: true,
       asynchronous: true,
       onComplete: function() {

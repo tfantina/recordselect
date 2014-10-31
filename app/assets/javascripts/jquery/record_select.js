@@ -186,10 +186,13 @@ RecordSelect.Abstract = Class.extend({
     jQuery.rails.fire(_this.obj, 'rs:before');
     _this.container.html('');
     _this.container.show();
+    var params = _this.obj.data('params');
+    var search_params = jQuery.param({search: _this.obj.val()});
+    params = params ? [params, search_params].join("&") : search_params;
     jQuery.ajax({
       url: this.url,
       //type: "POST",
-      data: _this.obj.data('params'),
+      data: params,
       //dataType: options.ajax_data_type,
       success: function(data){
         _this.container.html(data);
