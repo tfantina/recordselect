@@ -121,9 +121,8 @@ RecordSelect.select_item = function(item) {
   if (typeof onselect != 'function') onselect = eval(onselect);
   if (onselect) {
     try {
-      var label = jQuery.trim(item.find('label').first().text());
-      if (!label) label = item.text().trim();
-      onselect(item.attr('id').substr(2), label, e);
+      var label = item.find('label').first().text().trim(), text = item.text().trim();
+      onselect(item.attr('id').substr(2), label || text, text, e);
     } catch(e) {
       alert(e);
     }
@@ -174,7 +173,7 @@ RecordSelect.Abstract = Class.extend({
    * the onselect event handler - when someone clicks on a record
    * --override--
    */
-  onselect: function(id, value) {
+  onselect: function(id, value, text) {
     alert(id + ': ' + value);
   },
 
@@ -392,8 +391,8 @@ RecordSelect.Dialog = RecordSelect.Abstract.extend({
     if (this.onkeypress) this.obj.keypress(jQuery.proxy(this, 'onkeypress'));
   },
 
-  onselect: function(id, value) {
-    if (this.options.onselect(id, value) != false) this.close();
+  onselect: function(id, value, text) {
+    if (this.options.onselect(id, value, text) != false) this.close();
   },
 
   toggle: function() {
@@ -434,10 +433,10 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
     if (this.obj.prop('focused')) this.open(); // if it was focused before we could attach observers
   },
 
-  onselect: function(id, value) {
+  onselect: function(id, value, text) {
     this.set(id, value);
-    if (this.options.onchange) this.options.onchange.call(this, id, value);
-    this.obj.trigger("recordselect:change", [id, value]);
+    if (this.options.onchange) this.options.onchange.call(this, id, value, text);
+    this.obj.trigger("recordselect:change", [id, value, text]);
     this.close();
   },
 
@@ -477,10 +476,10 @@ RecordSelect.Autocomplete = RecordSelect.Abstract.extend({
     RecordSelect.Abstract.prototype.close.call(this);
   },
 
-  onselect: function(id, value) {
+  onselect: function(id, value, text) {
     this.set(value);
-    if (this.options.onchange) this.options.onchange.call(this, id, value);
-    this.obj.trigger("recordselect:change", [id, value]);
+    if (this.options.onchange) this.options.onchange.call(this, id, value, text);
+    this.obj.trigger("recordselect:change", [id, value, text]);
     this.close();
   },
 
@@ -522,7 +521,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
     if (this.obj.focused) this.open(); // if it was focused before we could attach observers
   },
 
-  onselect: function(id, value) {
+  onselect: function(id, value, text) {
     this.add(id, value);
   },
 
