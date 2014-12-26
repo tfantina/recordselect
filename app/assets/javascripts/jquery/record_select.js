@@ -88,7 +88,7 @@ if (typeof(jQuery.fn.delayedObserver) === 'undefined') {
               else {
                 if (el.data('timer')) { clearTimeout(el.data('timer')); }
                 el.data('timer', setTimeout(function(){
-                  var callback = el.data('callback')
+                  var callback = el.data('callback');
                   if (callback) callback.apply(el);
                 }, el.data('delay') * 1000));
                 el.data('oldval', el.val());
@@ -184,7 +184,7 @@ RecordSelect.Abstract = Class.extend({
   open: function() {
     if (this.is_open()) return;
     var _this = this;
-    jQuery.rails.fire(_this.obj, 'rs:before');
+    jQuery.rails.fire(_this.obj, 'recordselect:before');
     _this.container.html('');
     _this.container.show();
     var params = _this.obj.data('params');
@@ -201,6 +201,7 @@ RecordSelect.Abstract = Class.extend({
         else {
           _this.container.find('.text-input').val(_this.obj.val());
           RecordSelect.observe(_this.container.find('form').attr('id'));
+          _this.container.hide(); // needed to get right document height to position first time
           _this.show();
           jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }
@@ -212,19 +213,25 @@ RecordSelect.Abstract = Class.extend({
    * positions and reveals the recordselect
    */
   show: function() {
-    var offset = this.obj.offset()
-    if (this.fixed) offset.top -= jQuery(window).scrollTop(); // get fixed position
-    var top = this.obj.outerHeight() + offset.top;
+    var offset = this.obj.offset(), scroll = jQuery(window).scrollTop(), window_height = jQuery(window).height();
+    if (this.fixed) offset.top -= scroll; // get fixed position
+    var top = this.obj.outerHeight() + offset.top, document_height = jQuery(document).height();
     
     this.container.show();
+    var height = this.container.outerHeight();
     this.container.css('left', offset.left);
     this.container.css('top', '');
     this.container.css('bottom', '');
-    if (this.fixed && top + this.container.outerHeight() > jQuery(window).height()) {
-      this.container.css('bottom', jQuery(window).height() - offset.top);
+    if (this.fixed && top + height > window_height) {
+      this.container.css('bottom', window_height - offset.top);
     } else {
-      this.container.css('top', top);
-      if (!this.container.visible()) this.container.css('top', top - this.obj.outerHeight() - this.container.outerHeight());
+      var below_space = window_height-(top-scroll), above_space = offset.top - scroll, position;
+      if (below_space < height) {
+        if (above_space >= height) position = 'bottom';
+        else position = above_space < below_space ? 'top' : 'bottom';
+      } else position = 'top';
+      if (position == 'top') this.container.css('top', top);
+      else this.container.css('bottom', document_height - offset.top);
     }
 
     if (this._use_iframe_mask()) {
