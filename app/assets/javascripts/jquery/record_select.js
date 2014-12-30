@@ -395,7 +395,8 @@ RecordSelect.Dialog = RecordSelect.Abstract.extend({
     if (this.options.onselect(id, value, text) != false) this.close();
   },
 
-  toggle: function() {
+  toggle: function(e) {
+    e.preventDefault();
     if (this.is_open()) this.close();
     else this.open();
   }
