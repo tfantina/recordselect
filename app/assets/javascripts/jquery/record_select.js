@@ -116,13 +116,13 @@ var RecordSelect = new Object();
 RecordSelect.document_loaded = false;
 
 RecordSelect.select_item = function(item) {
-  var e = item.closest('.record-select-handler');
-  var onselect = e.get(0).onselect || e.attr('onselect');
+  var rs = item.closest('.record-select-handler');
+  var onselect = rs.get(0).onselect || rs.attr('onselect');
   if (typeof onselect != 'function') onselect = eval(onselect);
   if (onselect) {
     try {
       var label = item.find('label').first().text().trim(), text = item.text().trim();
-      onselect(item.attr('id').substr(2), label || text, text, e);
+      onselect(item.attr('id').substr(2), label || text, text, item);
     } catch(e) {
       alert(e);
     }
@@ -173,7 +173,7 @@ RecordSelect.Abstract = Class.extend({
    * the onselect event handler - when someone clicks on a record
    * --override--
    */
-  onselect: function(id, value, text) {
+  onselect: function(id, value, text, item) {
     alert(id + ': ' + value);
   },
 
@@ -391,8 +391,8 @@ RecordSelect.Dialog = RecordSelect.Abstract.extend({
     if (this.onkeypress) this.obj.keypress(jQuery.proxy(this, 'onkeypress'));
   },
 
-  onselect: function(id, value, text) {
-    if (this.options.onselect(id, value, text) != false) this.close();
+  onselect: function(id, value, text, item) {
+    if (this.options.onselect(id, value, text, item) != false) this.close();
   },
 
   toggle: function(e) {
@@ -434,10 +434,10 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
     if (this.obj.prop('focused')) this.open(); // if it was focused before we could attach observers
   },
 
-  onselect: function(id, value, text) {
+  onselect: function(id, value, text, item) {
     this.set(id, value);
-    if (this.options.onchange) this.options.onchange.call(this, id, value, text);
-    this.obj.trigger("recordselect:change", [id, value, text]);
+    if (this.options.onchange) this.options.onchange.call(this, id, value, text, item);
+    this.obj.trigger("recordselect:change", [id, value, text, item]);
     this.close();
   },
 
@@ -477,10 +477,10 @@ RecordSelect.Autocomplete = RecordSelect.Abstract.extend({
     RecordSelect.Abstract.prototype.close.call(this);
   },
 
-  onselect: function(id, value, text) {
+  onselect: function(id, value, text, item) {
     this.set(value);
-    if (this.options.onchange) this.options.onchange.call(this, id, value, text);
-    this.obj.trigger("recordselect:change", [id, value, text]);
+    if (this.options.onchange) this.options.onchange.call(this, id, value, text, item);
+    this.obj.trigger("recordselect:change", [id, value, text, item]);
     this.close();
   },
 
@@ -522,7 +522,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
     if (this.obj.focused) this.open(); // if it was focused before we could attach observers
   },
 
-  onselect: function(id, value, text) {
+  onselect: function(id, value, text, item) {
     this.add(id, value);
   },
 
