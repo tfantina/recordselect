@@ -221,7 +221,7 @@ RecordSelect.Abstract = Class.extend({
     this.container.css('left', offset.left);
     this.container.css('top', '');
     this.container.css('bottom', '');
-    if (this.fixed && top + height > window_height) {
+    if ((this.fixed || this.body_static) && top + height > window_height) {
       this.container.css('bottom', window_height - offset.top);
     } else {
       var below_space = window_height-(top-scroll), above_space = offset.top - scroll, position;
@@ -293,6 +293,7 @@ RecordSelect.Abstract = Class.extend({
       }
     });
     jQuery(document.body).append(e);
+    if (!rs.fixed && e.offsetParent().css('position') == 'static') rs.body_static = true;
     e.get(0).onselect = jQuery.proxy(this, "onselect")
     return e;
   },
