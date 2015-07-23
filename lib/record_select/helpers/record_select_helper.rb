@@ -72,9 +72,9 @@ module RecordSelectHelper
 
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
-    record_select_options = {}
+    record_select_options = {:label => options.delete(:label)}
     if current
-      record_select_options[:label] = label_for_field(current, controller)
+      record_select_options[:label] ||= label_for_field(current, controller)
     end
 
     html = text_field_tag(name, nil, options.merge(:autocomplete => 'off', :onfocus => "this.focused=true", :onblur => "this.focused=false"))
