@@ -418,6 +418,7 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
     this.container.submit(function() {
       rs.hidden_input.val('');
       rs.obj.removeClass('selected');
+      rs.obj.trigger('recordselect:unset', [rs]);
     });
 
     // create the hidden input
