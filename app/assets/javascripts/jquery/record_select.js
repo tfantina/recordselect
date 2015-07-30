@@ -4,20 +4,20 @@ if (typeof(Class) === 'undefined') {
   */
   (function(){
     var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
-  
+
     // The base Class implementation (does nothing)
     this.Class = function(){};
-   
+
     // Create a new Class that inherits from this class
     Class.extend = function(prop) {
       var _super = this.prototype;
-     
+
       // Instantiate a base class (but only create the instance,
       // don't run the init constructor)
       initializing = true;
       var prototype = new this();
       initializing = false;
-     
+
       // Copy the properties over onto the new prototype
       for (var name in prop) {
         // Check if we're overwriting an existing function
@@ -26,38 +26,38 @@ if (typeof(Class) === 'undefined') {
           (function(name, fn){
             return function() {
               var tmp = this._super;
-             
+
               // Add a new ._super() method that is the same method
               // but on the super-class
               this._super = _super[name];
-             
+
               // The method only need to be bound temporarily, so we
               // remove it when we're done executing
-              var ret = fn.apply(this, arguments);       
+              var ret = fn.apply(this, arguments);
               this._super = tmp;
-             
+
               return ret;
             };
           })(name, prop[name]) :
           prop[name];
       }
-     
+
       // The dummy class constructor
       function Class() {
         // All construction is actually done in the init method
         if ( !initializing && this.init )
           this.init.apply(this, arguments);
       }
-     
+
       // Populate our constructed prototype object
       Class.prototype = prototype;
-     
+
       // Enforce the constructor to be what we expect
       Class.constructor = Class;
-  
+
       // And make this class extendable
       Class.extend = arguments.callee;
-     
+
       return Class;
     };
   })();
@@ -66,9 +66,9 @@ if (typeof(Class) === 'undefined') {
 /*
  jQuery delayed observer
  (c) 2007 - Maxime Haineault (max@centdessin.com)
- 
+
  Special thanks to Stephen Goguen & Tane Piper.
- 
+
  Slight modifications by Elliot Winkler
 */
 
@@ -116,13 +116,11 @@ var RecordSelect = new Object();
 RecordSelect.document_loaded = false;
 
 RecordSelect.select_item = function(item) {
-  var rs = item.closest('.record-select-handler');
-  var onselect = rs.get(0).onselect || rs.attr('onselect');
-  if (typeof onselect != 'function') onselect = eval(onselect);
-  if (onselect) {
+  var rs = item.closest('.record-select-handler').data('recordselect');
+  if (rs) {
     try {
       var label = item.find('label').first().text().trim(), text = item.text().trim();
-      onselect(item.attr('id').substr(2), label || text, text, item);
+      rs.onselect(item.attr('id').substr(2), label || text, text, item);
     } catch(e) {
       alert(e);
     }
@@ -215,7 +213,7 @@ RecordSelect.Abstract = Class.extend({
     var offset = this.obj.offset(), scroll = jQuery(window).scrollTop(), window_height = jQuery(window).height();
     if (this.fixed) offset.top -= scroll; // get fixed position
     var top = this.obj.outerHeight() + offset.top, document_height = jQuery(document).height();
-    
+
     this.container.show();
     var height = this.container.outerHeight();
     this.container.css('left', offset.left);
@@ -285,6 +283,7 @@ RecordSelect.Abstract = Class.extend({
   create_container: function() {
     var e = jQuery("<div />", {'class': "record-select-container record-select-handler"}), rs = this;
     e.css('display', 'none');
+    e.data('recordselect', rs);
     jQuery(this.obj).add(this.obj.parents()).each(function() {
       if (jQuery(this).css('position') == 'fixed') {
         rs.fixed = jQuery(this);
@@ -297,7 +296,7 @@ RecordSelect.Abstract = Class.extend({
     e.get(0).onselect = jQuery.proxy(this, "onselect")
     return e;
   },
-  
+
   onkeyup: function(event) {
     if (!this.is_open()) return;
     this.container.find('.text-input').val(this.obj.val()).trigger(event);
@@ -447,7 +446,7 @@ RecordSelect.Single = RecordSelect.Abstract.extend({
    */
   set: function(id, label) {
     // unescaped html missing for label
-    this.obj.val(label); 
+    this.obj.val(label);
     this.hidden_input.val(id);
     this.obj.addClass('selected');
   }
@@ -490,7 +489,7 @@ RecordSelect.Autocomplete = RecordSelect.Abstract.extend({
    */
   set: function(label) {
     // unescaped html missing for label
-    this.obj.val(label); 
+    this.obj.val(label);
   }
 });
 
@@ -516,7 +515,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
 
     // initialize the list
     for(var i = 0, length = this.options.current.length; i < length; i++) {
-      this.add(this.options.current[i].id, this.options.current[i].label); 
+      this.add(this.options.current[i].id, this.options.current[i].label);
     }
 
     this._respond_to_text_field(this.obj);
