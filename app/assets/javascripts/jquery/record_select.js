@@ -120,6 +120,7 @@ RecordSelect.select_item = function(item) {
   if (rs) {
     try {
       var label = item.find('label').first().text().trim(), text = item.text().trim();
+      rs.obj.focus();
       rs.onselect(item.attr('id').substr(2), label || text, text, item);
     } catch(e) {
       alert(e);
