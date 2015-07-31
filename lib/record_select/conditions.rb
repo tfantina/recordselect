@@ -70,6 +70,7 @@ module RecordSelect
       conditions
     end
 
+    @@type_cast_method = Rails.version < '4.2' ? :type_cast : :type_cast_from_user
     # generates an SQL condition for the given column/value
     def record_select_condition_for_column(column, value)
       model = record_select_config.model
@@ -79,7 +80,7 @@ module RecordSelect
       elsif column.text?
         ["LOWER(#{column_name}) LIKE ?", value]
       else
-        ["#{column_name} = ?", column.type_cast(value)]
+        ["#{column_name} = ?", column.send(@@type_cast_method, value)]
       end
     end
 
