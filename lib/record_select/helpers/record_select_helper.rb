@@ -4,6 +4,8 @@ module RecordSelectHelper
   # *Options*
   # +onselect+::  JavaScript code to handle selections client-side. This code has access to two variables: id, label. If the code returns false, the dialog will *not* close automatically.
   # +params+::    Extra URL parameters. If any parameter is a column name, the parameter will be used as a search term to filter the result set.
+  # +html+::      Options for A tag
+  # +rs+::        Options for RecordSelect constructor
   def link_to_record_select(name, controller, options = {})
     options[:params] ||= {}
     options[:params].merge!(:controller => controller, :action => :browse)
@@ -12,9 +14,11 @@ module RecordSelectHelper
     options[:html][:id] ||= "rs_#{rand(9999)}"
 
     assert_controller_responds(options[:params][:controller])
+    record_select_options = {:onselect => options[:onselect] || ''}
+    record_select_options.merge! options[:rs] if options[:rs]
 
     html = link_to(name, '#', options[:html])
-    html << javascript_tag("new RecordSelect.Dialog(#{options[:html][:id].to_json}, #{url_for(options[:params]).to_json}, {onselect: #{options[:onselect] || ''}})")
+    html << javascript_tag("new RecordSelect.Dialog(#{options[:html][:id].to_json}, #{url_for(options[:params]).to_json}, #{record_select_options.to_json});")
 
     return html
   end
@@ -30,6 +34,7 @@ module RecordSelectHelper
   # +params+::      A hash of extra URL parameters
   # +id+::          The id to use for the input. Defaults based on the input's name.
   # +field_name+::  The name to use for the text input. Defaults to '', so field is not submitted.
+  # +rs+::          Options for RecordSelect constructor
   def record_select_field(name, current, options = {})
     options[:controller] ||= current.class.to_s.pluralize.underscore
     options[:params] ||= {}
@@ -45,6 +50,7 @@ module RecordSelectHelper
       record_select_options[:id] = current.id
       record_select_options[:label] = label_for_field(current, controller)
     end
+    record_select_options.merge! options[:rs] if options[:rs]
 
     html = text_field_tag(name, nil, options.merge(:autocomplete => 'off', :onfocus => "this.focused=true", :onblur => "this.focused=false"))
     url = url_for({:action => :browse, :controller => controller.controller_path}.merge(params))
@@ -63,6 +69,7 @@ module RecordSelectHelper
   # +controller+::  The controller configured to provide the result set. Optional if you have standard resource controllers (e.g. UsersController for the User model), in which case the controller will be inferred from the class of +current+ (the second argument)
   # +params+::      A hash of extra URL parameters
   # +id+::          The id to use for the input. Defaults based on the input's name.
+  # +rs+::          Options for RecordSelect constructor
   def record_select_autocomplete(name, current, options = {})
     options[:controller] ||= current.class.to_s.pluralize.underscore
     options[:params] ||= {}
@@ -76,6 +83,7 @@ module RecordSelectHelper
     if current
       record_select_options[:label] ||= label_for_field(current, controller)
     end
+    record_select_options.merge! options[:rs] if options[:rs]
 
     html = text_field_tag(name, nil, options.merge(:autocomplete => 'off', :onfocus => "this.focused=true", :onblur => "this.focused=false"))
     url = url_for({:action => :browse, :controller => controller.controller_path}.merge(params))
@@ -94,6 +102,7 @@ module RecordSelectHelper
   # +controller+::  The controller configured to provide the result set.
   # +params+::      A hash of extra URL parameters
   # +id+::          The id to use for the input. Defaults based on the input's name.
+  # +rs+::          Options for RecordSelect constructor
   def record_multi_select_field(name, current, options = {})
     options[:controller] ||= current.first.class.to_s.pluralize.underscore
     options[:params] ||= {}
@@ -106,6 +115,7 @@ module RecordSelectHelper
     params = options.delete(:params)
     record_select_options = {}
     record_select_options[:current] = current.inject([]) { |memo, record| memo.push({:id => record.id, :label => label_for_field(record, controller)}) }
+    record_select_options.merge! options[:rs] if options[:rs]
 
     html = text_field_tag("#{name}[]", nil, options.merge(:autocomplete => 'off', :onfocus => "this.focused=true", :onblur => "this.focused=false"))
     html << hidden_field_tag("#{name}[]", '', :id => nil)
