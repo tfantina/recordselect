@@ -110,6 +110,15 @@ jQuery(document).ready(function() {
     }
     return true;
   });
+  jQuery(document).on('ajax:beforeSend', '.record-select-container', function(event, xhr) {
+    var rs = jQuery(this).data('recordselect'), cur = rs.current_xhr;
+    rs.current_xhr = xhr;
+    if (cur) cur.abort();
+  });
+  jQuery(document).on('ajax:complete', '.record-select-container', function(event) {
+    var rs = jQuery(this).data('recordselect');
+    rs.current_xhr = null;
+  });
 });
 
 var RecordSelect = new Object();
@@ -188,19 +197,19 @@ RecordSelect.Abstract = Class.extend({
     var params = _this.obj.data('params');
     var search_params = jQuery.param({search: _this.obj.val()});
     params = params ? [params, search_params].join("&") : search_params;
-    jQuery.ajax({
+    this.current_xhr = jQuery.ajax({
       url: this.url,
       //type: "POST",
       data: params,
       //dataType: options.ajax_data_type,
       success: function(data){
+        _this.current_xhr = null;
         _this.container.html(data);
         if (!_this.container.is(':visible')) _this.close();
         else {
           _this.container.find('.text-input').val(_this.obj.val());
           RecordSelect.observe(_this.container.find('form').attr('id'));
           _this.container.hide(); // needed to get right document height to position first time
-          _this.show();
           jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }
       }
