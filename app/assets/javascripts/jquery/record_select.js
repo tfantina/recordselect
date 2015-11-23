@@ -115,10 +115,12 @@ jQuery(document).ready(function() {
     rs.current_xhr = xhr;
     if (cur) cur.abort();
   });
-  jQuery(document).on('ajax:complete', '.record-select-container', function(event) {
+  jQuery(document).on('ajax:complete', '.record-select-container', function(event, xhr, status) {
     var rs = jQuery(this).data('recordselect');
-    if (rs.is_open()) rs.show();
-    rs.current_xhr = null;
+    if (status != 'abort' || rs.current_xhr == xhr) {
+      if (rs.is_open()) rs.show();
+      rs.current_xhr = null;
+    }
   });
 });
 
@@ -212,8 +214,8 @@ RecordSelect.Abstract = Class.extend({
       //type: "POST",
       data: params,
       //dataType: options.ajax_data_type,
-      success: function(data){
-        _this.current_xhr = null;
+      success: function(data, status){
+        if (status != 'abort') _this.current_xhr = null;
         _this.container.html(data);
         if (!_this.container.is(':visible')) _this.close();
         else {
