@@ -117,6 +117,7 @@ jQuery(document).ready(function() {
   });
   jQuery(document).on('ajax:complete', '.record-select-container', function(event) {
     var rs = jQuery(this).data('recordselect');
+    if (rs.is_open()) rs.show();
     rs.current_xhr = null;
   });
 });
@@ -138,10 +139,17 @@ RecordSelect.select_item = function(item) {
 }
 
 RecordSelect.observe = function(id) {
-  var form = jQuery("#" + id);
+  var form = jQuery("#" + id), min_length = 0;
+  var rs = form.closest('.record-select-container').data('recordselect');
+  if (rs) min_length = rs.min_length;
   form.find('input.text-input').delayedObserver(function() {
     if (form.closest('body').length) form.trigger("submit");
-  }, 0.35);
+  }, 0.35, {
+    condition: function() {
+      var item = jQuery(this);
+      return item.data('oldval') == item.val() || item.val().length < min_length;
+    }
+  });
 }
 
 RecordSelect.render_page = function(record_select_id, page) {
@@ -160,6 +168,7 @@ RecordSelect.Abstract = Class.extend({
     this.url = url;
     this.options = options;
     this.container;
+    this.min_length = options.min_length || 0;
     if (this.options.onchange && typeof this.options.onchange != 'function') {
       this.options.onchange = eval(this.options.onchange);
     }
@@ -194,8 +203,9 @@ RecordSelect.Abstract = Class.extend({
     jQuery.rails.fire(_this.obj, 'recordselect:before');
     _this.container.html('');
     _this.container.show();
-    var params = _this.obj.data('params');
-    var search_params = jQuery.param({search: _this.obj.val()});
+    var params = _this.obj.data('params'), text = _this.obj.val();
+
+    var search_params = jQuery.param({search: text});
     params = params ? [params, search_params].join("&") : search_params;
     this.current_xhr = jQuery.ajax({
       url: this.url,
@@ -210,6 +220,7 @@ RecordSelect.Abstract = Class.extend({
           _this.container.find('.text-input').val(_this.obj.val());
           RecordSelect.observe(_this.container.find('form').attr('id'));
           _this.container.hide(); // needed to get right document height to position first time
+          if (text.length >= this.min_length) _this.show();
           jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }
       }
