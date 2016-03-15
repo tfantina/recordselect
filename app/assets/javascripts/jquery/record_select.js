@@ -251,7 +251,11 @@ RecordSelect.Abstract = Class.extend({
         else position = above_space < below_space ? 'top' : 'bottom';
       } else position = 'top';
       if (position == 'top') this.container.css('top', top);
-      else this.container.css('bottom', document_height - offset.top);
+      else {
+        var bottom = document_height - offset.top, body_height = $(document.body).height();
+        if (body_height < document_height) bottom -= document_height - body_height;
+        this.container.css('bottom', bottom);
+      }
     }
 
     if (this._use_iframe_mask()) {
