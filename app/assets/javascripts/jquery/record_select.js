@@ -222,7 +222,7 @@ RecordSelect.Abstract = Class.extend({
           _this.container.find('.text-input').val(_this.obj.val());
           RecordSelect.observe(_this.container.find('form').attr('id'));
           _this.container.hide(); // needed to get right document height to position first time
-          if (text.length >= this.min_length) _this.show();
+          if (text.length >= _this.min_length) _this.show();
           jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }
       }
