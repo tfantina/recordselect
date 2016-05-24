@@ -174,6 +174,9 @@ RecordSelect.Abstract = Class.extend({
     if (this.options.onchange && typeof this.options.onchange != 'function') {
       this.options.onchange = eval(this.options.onchange);
     }
+    if (this.options.onselect && typeof this.options.onselect != 'function') {
+      this.options.onselect = eval(this.options.onselect);
+    }
 
     if (RecordSelect.document_loaded) {
       this.onload();

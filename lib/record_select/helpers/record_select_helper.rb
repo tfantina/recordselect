@@ -9,7 +9,7 @@ module RecordSelectHelper
   def link_to_record_select(name, controller, options = {})
     options[:params] ||= {}
     options[:params].merge!(:controller => controller, :action => :browse)
-    options[:onselect] = "function(id, label) {#{options[:onselect]}}" if options[:onselect]
+    options[:onselect] = "(function(id, label) {#{options[:onselect]}})" if options[:onselect]
     options[:html] ||= {}
     options[:html][:id] ||= "rs_#{rand(9999)}"
 
