@@ -8,7 +8,7 @@ module RecordSelect
       klass = record_select_model.where(conditions).includes(user_includes)
       klass = klass.references(user_includes) if Rails::VERSION::MAJOR >= 4 && user_includes.present?
       @count = klass.count if record_select_config.pagination?
-      @count = @count.length if @count.is_a? ActiveSupport::OrderedHash
+      @count = @count.length if @count.is_a? Hash
       pager = ::Paginator.new(@count, record_select_config.per_page) do |offset, per_page|
         search = record_select_select ? klass.select(record_select_select) : klass
         search = search.limit(per_page).offset(offset) if record_select_config.pagination?
