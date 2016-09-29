@@ -1,4 +1,9 @@
 module RecordSelectHelper
+  # If you use :params option, define this helper in your controller helpers
+  # to return array with those params, so _list partial permits them
+  def permit_rs_browse_params
+  end
+
   # Adds a link on the page that toggles a RecordSelect widget from the given controller.
   #
   # *Options*

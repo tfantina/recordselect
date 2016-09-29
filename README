@@ -1,7 +1,7 @@
 RecordSelect
 ============
 
-(c) 2007 - Lance Ivy
+(c) 2007 - 2016 Sergio Cambra, Lance Ivy
 
 RecordSelect is a Rails widget to help you pick one record out of many. I designed it as a more usable and performant alternative to generating a massive dropdown list. It relies on AJAX for the cooler uses (all the provided view helpers rely on JavaScript?) but can also function in a pure-http fashion (although multi-select support is provided in a pure-JavaScript implementation).
 
@@ -10,6 +10,6 @@ Please see the ActionView::Helpers::RecordSelectHelpers for the most common API.
 = DEPENDENCIES
 This depends on the excellent Paginator gem by Bruce Williams. This simple gem is available at paginator.rubyforge.org.
 
-
-If you would like to use jquery:
-uncomment line #RecordSelect::Config.js_framework = :jquery in init.rb
+It should autoselect js framework, but you can select :jquery or :prototype framework with config/initializer file:
+RecordSelect::Config.js_framework = :jquery
+RecordSelect::Config.js_framework = :prototype
