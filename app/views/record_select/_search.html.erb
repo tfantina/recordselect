@@ -1,4 +1,7 @@
-<% url_options = params.permit(*([:search] + permit_rs_browse_params)).merge(:controller => controller, :action => :browse, :page => 1, :update => 1) -%>
+<%
+permit_fields = [:search] + (permit_rs_browse_params || [])
+url_options = params.permit(*permit_fields).merge(:controller => controller, :action => :browse, :page => 1, :update => 1)
+-%>
 <%= form_tag url_options, {:method => :get, :remote => true, :id => record_select_search_id}  -%>
   <%= text_field_tag 'search', params[:search], :autocomplete => 'off', :class => 'text-input' %>
   <%= submit_tag 'search', :class => "search_submit" %>
