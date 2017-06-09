@@ -75,7 +75,9 @@ module RecordSelect
     def record_select_condition_for_column(column, value)
       model = record_select_config.model
       column_name = model.quoted_table_name + '.' + model.connection.quote_column_name(column.name)
-      if value.blank? and column.null
+      if value.is_a? Array
+        {column.name => value}
+      elsif value.blank? and column.null
         "#{column_name} IS NULL"
       elsif column.text?
         ["LOWER(#{column_name}) LIKE ?", value]
