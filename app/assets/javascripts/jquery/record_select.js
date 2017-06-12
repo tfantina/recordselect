@@ -323,7 +323,7 @@ RecordSelect.Abstract = Class.extend({
       }
     });
     jQuery(document.body).append(e);
-    jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
+    jQuery(document.body).mousedown(jQuery.proxy(this, "onbodyclick"));
     if (!rs.fixed && e.offsetParent().css('position') == 'static') rs.body_static = true;
     e.get(0).onselect = jQuery.proxy(this, "onselect")
     return e;
