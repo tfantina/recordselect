@@ -140,9 +140,10 @@ RecordSelect.select_item = function(item) {
   }
 }
 
-RecordSelect.observe = function(id) {
-  var form = jQuery("#" + id), min_length = 0;
-  var rs = form.closest('.record-select-container').data('recordselect');
+RecordSelect.observe = function(form) {
+  if (typeof(form) == 'string') form = '#' + form;
+  form = jQuery(form);
+  var min_length = 0, rs = form.closest('.record-select-container').data('recordselect');
   if (rs) min_length = rs.min_length;
   form.find('input.text-input').delayedObserver(function() {
     if (form.closest('body').length) form.trigger("submit");
@@ -206,7 +207,7 @@ RecordSelect.Abstract = Class.extend({
     if (this.is_open()) return;
     var _this = this;
     jQuery.rails.fire(_this.obj, 'recordselect:before');
-    _this.container.html('');
+    _this.create_form();
     _this.container.show();
     var params = _this.obj.data('params'), text = _this.obj.val();
 
@@ -218,15 +219,15 @@ RecordSelect.Abstract = Class.extend({
       data: params,
       //dataType: options.ajax_data_type,
       success: function(data, status){
+        if (rs.current_xhr != xhr) return;
         if (status != 'abort') _this.current_xhr = null;
         _this.container.html(data);
         if (!_this.container.is(':visible')) _this.close();
         else {
           _this.container.find('.text-input').val(_this.obj.val());
-          RecordSelect.observe(_this.container.find('form').attr('id'));
+          RecordSelect.observe(_this.container.find('form'));
           _this.container.hide(); // needed to get right document height to position first time
           if (text.length >= _this.min_length) _this.show();
-          jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
         }
       }
     });
@@ -292,7 +293,7 @@ RecordSelect.Abstract = Class.extend({
    * returns true/false for whether the recordselect is open
    */
   is_open: function() {
-	  return (!(jQuery.trim(this.container.html()).length == 0))
+    return jQuery.trim(this.container.html()).length != 0;
   },
 
   /**
@@ -322,9 +323,21 @@ RecordSelect.Abstract = Class.extend({
       }
     });
     jQuery(document.body).append(e);
+    jQuery(document.body).mousedown(jQuery.proxy(_this, "onbodyclick"));
     if (!rs.fixed && e.offsetParent().css('position') == 'static') rs.body_static = true;
     e.get(0).onselect = jQuery.proxy(this, "onselect")
     return e;
+  },
+
+  create_form: function() {
+    var div = jQuery('<div>').addClass('record-select').attr('id', this.options.id);
+    var form = jQuery('<form>').attr('action', this.url).attr('data-remote', true).attr('method', 'get');
+    form.append(jQuery('<input type="text" name="search" class="text-input">'));
+    form.append(jQuery('<input type="hidden" name="page" value="1">'));
+    form.append(jQuery('<input type="hidden" name="update" value="1">'));
+    div.append(form).append(jQuery('<ol>'));
+    this.container.html(div);
+    RecordSelect.observe(form);
   },
 
   onkeyup: function(event) {

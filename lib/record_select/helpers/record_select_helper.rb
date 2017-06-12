@@ -19,7 +19,7 @@ module RecordSelectHelper
     options[:html][:id] ||= "rs_#{rand(9999)}"
 
     assert_controller_responds(options[:params][:controller])
-    record_select_options = {:onselect => options[:onselect] || ''}
+    record_select_options = {id: record_select_id(controller), onselect: options[:onselect] || ''}
     record_select_options.merge! options[:rs] if options[:rs]
 
     html = link_to(name, '#', options[:html])
@@ -49,7 +49,7 @@ module RecordSelectHelper
 
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
-    record_select_options = {}
+    record_select_options = {id: record_select_id(controller)}
     record_select_options[:field_name] = options.delete(:field_name) if options[:field_name]
     if current and not current.new_record?
       record_select_options[:id] = current.id
@@ -84,7 +84,7 @@ module RecordSelectHelper
 
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
-    record_select_options = {:label => options.delete(:label)}
+    record_select_options = {id: record_select_id(controller), label: options.delete(:label)}
     if current
       record_select_options[:label] ||= label_for_field(current, controller)
     end
@@ -118,7 +118,7 @@ module RecordSelectHelper
 
     controller = assert_controller_responds(options.delete(:controller))
     params = options.delete(:params)
-    record_select_options = {}
+    record_select_options = {id: record_select_id(controller)}
     record_select_options[:current] = current.inject([]) { |memo, record| memo.push({:id => record.id, :label => label_for_field(record, controller)}) }
     record_select_options.merge! options[:rs] if options[:rs]
 
