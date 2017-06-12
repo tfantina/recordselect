@@ -215,11 +215,9 @@ RecordSelect.Abstract = Class.extend({
     params = params ? [params, search_params].join("&") : search_params;
     this.current_xhr = jQuery.ajax({
       url: this.url,
-      //type: "POST",
       data: params,
-      //dataType: options.ajax_data_type,
-      success: function(data, status){
-        if (rs.current_xhr != xhr) return;
+      success: function(data, status, xhr) {
+        if (_this.current_xhr != xhr) return;
         if (status != 'abort') _this.current_xhr = null;
         _this.container.html(data);
         if (!_this.container.is(':visible')) _this.close();
