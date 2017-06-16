@@ -79,7 +79,7 @@ module RecordSelect
         {column.name => value}
       elsif value.blank? and column.null
         "#{column_name} IS NULL"
-      elsif column.text?
+      elsif [:string, :text].include? column.type
         ["LOWER(#{column_name}) LIKE ?", value]
       else
         ["#{column_name} = ?", column.send(@@type_cast_method, value)]
