@@ -110,6 +110,12 @@ jQuery(document).ready(function() {
     }
     return true;
   });
+  jQuery(document).on('click', '.record-select-option .remove', function(event) {
+    var line = jQuery(this).parent(), value = line.find(':input:hidden').val();
+    line.data('recordselect').obj.trigger('recordselect:remove', [id]);
+    line.remove();
+    return false;
+  });
   jQuery(document).on('ajax:beforeSend', '.record-select-container', function(event, xhr) {
     var rs = jQuery(this).data('recordselect'), cur = rs.current_xhr;
     rs.current_xhr = xhr;
@@ -550,6 +556,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
     // decide where the <li> entries should be placed
     if (this.options.list) this.list_container = jQuery(this.options.list);
     else this.list_container = this.obj.siblings('ul');
+    this.list_container.data('recordselect', this);
 
     // take the input name from the text input, and store it for this.add()
     this.input_name = this.obj.attr('name');
@@ -566,6 +573,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
 
   onselect: function(id, value, text, item) {
     this.add(id, value);
+    this.obj.trigger("recordselect:add", [id, value, text, item]);
   },
 
   /**
@@ -575,8 +583,8 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
     // return silently if this value has already been selected
     if (this.list_container.has('input[value=' + id + ']').length > 0) return;
 
-    var entry = '<li>'
-              + '<a href="#" onclick="jQuery(this).parent().remove(); return false;" class="remove">remove</a>'
+    var entry = '<li class="record-select-option">'
+              + '<a href="#" class="remove">remove</a>'
               + '<input type="hidden" name="' + this.input_name + '" value="' + id + '" />'
               + '<label>' + label + '</label>'
               + '</li>';
