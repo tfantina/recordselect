@@ -70,7 +70,19 @@ module RecordSelect
       conditions
     end
 
-    @@type_cast_method = Rails.version < '4.2' ? :type_cast : :type_cast_from_user
+    def record_select_type_cast(column, value)
+      if Rails.version < '4.2'
+        column.type_cast value
+      elsif Rails.version < '5.0'
+        column.type_cast_from_user value
+      elsif column.type.respond_to? :cast # jruby-jdbc and rails 5
+        column.type.cast value
+      else
+        cast_type = ActiveModel::Type.lookup column.type
+        cast_type ? cast_type.cast(value) : value
+      end
+    end
+
     # generates an SQL condition for the given column/value
     def record_select_condition_for_column(column, value)
       model = record_select_config.model
@@ -82,7 +94,7 @@ module RecordSelect
       elsif [:string, :text].include? column.type
         ["LOWER(#{column_name}) LIKE ?", value]
       else
-        ["#{column_name} = ?", column.send(@@type_cast_method, value)]
+        ["#{column_name} = ?", record_select_type_cast(column, value)]
       end
     end
 
