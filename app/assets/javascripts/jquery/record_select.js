@@ -112,7 +112,7 @@ jQuery(document).ready(function() {
   });
   jQuery(document).on('click', '.record-select-option .remove', function(event) {
     var line = jQuery(this).parent(), value = line.find(':input:hidden').val();
-    line.parent().data('recordselect').obj.trigger('recordselect:remove', [id]);
+    line.parent().data('recordselect').obj.trigger('recordselect:remove', [value]);
     line.remove();
     return false;
   });
