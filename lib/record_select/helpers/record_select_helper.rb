@@ -18,7 +18,7 @@ module RecordSelectHelper
     options[:html] ||= {}
     options[:html][:id] ||= "rs_#{rand(9999)}"
 
-    assert_controller_responds(options[:params][:controller])
+    controller = assert_controller_responds(options[:params][:controller])
     record_select_options = {id: record_select_id(controller.controller_path), onselect: options[:onselect] || ''}
     record_select_options.merge! options[:rs] if options[:rs]
 
