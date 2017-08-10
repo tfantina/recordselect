@@ -5,12 +5,14 @@ module RecordSelect
     def browse
       conditions = record_select_conditions
       user_includes = record_select_includes
-      klass = record_select_model.where(conditions).includes(user_includes)
-      klass = klass.references(user_includes) if Rails::VERSION::MAJOR >= 4 && user_includes.present?
-      @count = klass.count if record_select_config.pagination?
+      query = conditions.inject(record_select_model.includes(user_includes)) do |query, cond|
+        query.where(cond)
+      end
+      query = query.references(user_includes) if Rails::VERSION::MAJOR >= 4 && user_includes.present?
+      @count = query.count if record_select_config.pagination?
       @count = @count.length if @count.is_a? Hash
       pager = ::Paginator.new(@count, record_select_config.per_page) do |offset, per_page|
-        search = record_select_select ? klass.select(record_select_select) : klass
+        search = record_select_select ? query.select(record_select_select) : query
         search = search.limit(per_page).offset(offset) if record_select_config.pagination?
         search.includes(record_select_config.include).order(record_select_config.order_by).to_a
       end

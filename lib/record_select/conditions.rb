@@ -90,17 +90,16 @@ module RecordSelect
       if value.is_a? Array
         {column.name => value}
       elsif value.blank? and column.null
-        "#{column_name} IS NULL"
+        {column_name => nil}
       elsif [:string, :text].include? column.type
         ["LOWER(#{column_name}) LIKE ?", value]
       else
-        ["#{column_name} = ?", record_select_type_cast(column, value)]
+        {column_name => record_select_type_cast(column, value)}
       end
     end
 
     def merge_conditions(*conditions) #:nodoc:
-      c = conditions.find_all {|c| not c.nil? and not c.empty? }
-      c.empty? ? nil : c.collect{|c| record_select_config.model.send(:sanitize_sql, c)}.join(' AND ')
+      conditions.select(&:present?).flatten(1)
     end
   end
 end
