@@ -9,11 +9,11 @@ module RecordSelect
     def record_select_conditions
       conditions = []
 
-      merge_conditions(
+      [
         record_select_conditions_from_search,
-        record_select_conditions_from_params,
+        *record_select_conditions_from_params,
         record_select_conditions_from_controller
-      )
+      ].compact
     end
 
     # an override method.
@@ -59,13 +59,10 @@ module RecordSelect
 
     # generate conditions from the url parameters (e.g. users/browse?group_id=5)
     def record_select_conditions_from_params
-      conditions = nil
+      conditions = []
       params.each do |field, value|
         next unless column = record_select_config.model.columns_hash[field]
-        conditions = merge_conditions(
-          conditions,
-          record_select_condition_for_column(column, value)
-        )
+        conditions << record_select_condition_for_column(column, value)
       end
       conditions
     end
@@ -96,10 +93,6 @@ module RecordSelect
       else
         {column_name => record_select_type_cast(column, value)}
       end
-    end
-
-    def merge_conditions(*conditions) #:nodoc:
-      conditions.select(&:present?).flatten(1)
     end
   end
 end
