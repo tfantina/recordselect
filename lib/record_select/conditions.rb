@@ -83,15 +83,15 @@ module RecordSelect
     # generates an SQL condition for the given column/value
     def record_select_condition_for_column(column, value)
       model = record_select_config.model
-      column_name = model.quoted_table_name + '.' + model.connection.quote_column_name(column.name)
       if value.is_a? Array
         {column.name => value}
       elsif value.blank? and column.null
-        {column_name => nil}
+        {column.name => nil}
       elsif [:string, :text].include? column.type
+        column_name = model.quoted_table_name + '.' + model.connection.quote_column_name(column.name)
         ["LOWER(#{column_name}) LIKE ?", value]
       else
-        {column_name => record_select_type_cast(column, value)}
+        {column.name => record_select_type_cast(column, value)}
       end
     end
   end
