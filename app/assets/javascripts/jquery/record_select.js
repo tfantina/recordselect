@@ -151,13 +151,16 @@ RecordSelect.observe = function(form) {
   form = jQuery(form);
   var min_length = 0, rs = form.closest('.record-select-container').data('recordselect');
   if (rs) min_length = rs.min_length;
-  form.find('input.text-input').delayedObserver(function() {
+  var callback = function() {
     if (form.closest('body').length) form.trigger("submit");
-  }, 0.35, {
+  };
+  form.find('input.text-input').delayedObserver(callback, 0.35, {
     condition: function() {
       var item = jQuery(this);
       return item.data('oldval') == item.val() || item.val().length < min_length;
     }
+  }).on('paste', function() {
+    if (form.closest('body').length) form.trigger("submit");
   });
 }
 
@@ -349,6 +352,13 @@ RecordSelect.Abstract = Class.extend({
     this.container.find('.text-input').val(this.obj.val()).trigger(event);
   },
 
+  onpaste: function(event) {
+    if (!this.is_open()) return;
+    setTimeout(function () {
+      this.container.find('.text-input').val(this.obj.val()).trigger(event);
+    }.bind(this), 0);
+  },
+
   /**
    * all the behavior to respond to a text field as a search box
    */
@@ -358,6 +368,9 @@ RecordSelect.Abstract = Class.extend({
 
     // the autosearch event - needs to happen slightly late (keyup is later than keypress)
     text_field.keyup(jQuery.proxy(this, 'onkeyup'));
+
+    // the autosearch event - needs to happen slightly late (keyup is later than keypress)
+    text_field.on('paste', jQuery.proxy(this, 'onpaste'));
 
     // keyboard navigation, if available
     if (this.onkeydown) {
