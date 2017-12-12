@@ -165,7 +165,7 @@ module RecordSelectHelper
 
     when Proc
       # return an html-cleaned descriptive string
-      renderer.call(record)
+      instance_exec record, &renderer
     end
   end
 
