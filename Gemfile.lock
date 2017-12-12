@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    recordselect (3.8.7)
+    recordselect (3.9.0)
       rails (>= 4.0.0)
 
 GEM
@@ -47,7 +47,7 @@ GEM
     arel (8.0.0)
     builder (3.2.3)
     concurrent-ruby (1.0.5)
-    crass (1.0.2)
+    crass (1.0.3)
     erubi (1.7.0)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
@@ -91,7 +91,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (12.2.1)
+    rake (12.3.0)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
