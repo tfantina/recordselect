@@ -53,12 +53,16 @@ module RecordSelect
     end
 
     def render_record_select(options = {}) #:nodoc:
-      [:template,:partial].each do |template_name|
+      [:template, :partial].each do |template_name|
         if options[template_name] then
           options[template_name] = File.join(record_select_views_path, options[template_name])
         end
       end
-      if block_given? then yield options else render options end
+      if block_given? then
+        yield options
+      else
+        render options
+      end
     end
 
     private
