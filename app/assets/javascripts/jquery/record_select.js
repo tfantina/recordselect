@@ -117,8 +117,11 @@ jQuery(document).ready(function() {
     return false;
   });
   jQuery(document).on('ajax:beforeSend', '.record-select-container', function(event, xhr) {
-    var rs = jQuery(this).data('recordselect'), cur = rs.current_xhr;
+    var rs = jQuery(this).data('recordselect'), cur = rs.current_xhr, found = jQuery(this).find('.found');
+    jQuery(this).find('.record, .pagination').remove();
+    found.html(found.data('searching'));
     rs.current_xhr = xhr;
+    console.log(rs.current_xhr);
     if (cur) cur.abort();
   });
   jQuery(document).on('ajax:complete', '.record-select-container', function(event, xhr, status) {

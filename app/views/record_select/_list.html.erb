@@ -7,8 +7,8 @@ prev_url = url_for(pagination_url_params.merge(:page => page.prev.number)) if pa
 next_url = url_for(pagination_url_params.merge(:page => page.next.number)) if page.next?
 -%>
 <%= content_tag :ol, :class => ('scrollable' unless record_select_config.pagination?) do %>
-  <li class="found"><%= rs_(:records_found, :count => page.pager.count,
-:model => record_select_config.model.model_name.human(:count => page.pager.count).downcase) %></li>
+  <%= content_tag :li, rs_(:records_found, :count => page.pager.count,
+:model => record_select_config.model.model_name.human(:count => page.pager.count).downcase), class: 'found', data: {searching: rs_(:searching)} %>
   <% if page.prev? -%>
   <li class="pagination previous">
     <%= link_to image_tag('record_select/previous.gif', :alt => rs_(:previous)) + " " + rs_(:previous_items,
