@@ -80,7 +80,7 @@ if (typeof(jQuery.fn.delayedObserver) === 'undefined') {
           var el = $(this);
           var op = options || {};
           el.data('oldval', el.val())
-            .data('delay', delay || 0.5)
+            .data('delay', delay === 0 ? delay : (delay || 0.5))
             .data('condition', op.condition || function() { return ($(this).data('oldval') == $(this).val()); })
             .data('callback', callback)
             [(op.event||'keyup')](function(){
@@ -157,7 +157,7 @@ RecordSelect.observe = function(form) {
   var callback = function() {
     if (form.closest('body').length) form.trigger("submit");
   };
-  var delay = parseFloat(rs.obj.data('rs-delay'));
+  var delay = parseFloat(rs.obj.data('rsDelay'));
   if (isNaN(delay)) delay = 0.35;
   form.find('input.text-input').delayedObserver(callback, delay, {
     condition: function() {
