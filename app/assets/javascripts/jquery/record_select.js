@@ -154,7 +154,9 @@ RecordSelect.observe = function(form) {
   var callback = function() {
     if (form.closest('body').length) form.trigger("submit");
   };
-  form.find('input.text-input').delayedObserver(callback, 0.35, {
+  var delay = parseFloat(rs.obj.data('rs-delay'));
+  if (isNaN(delay)) delay = 0.35;
+  form.find('input.text-input').delayedObserver(callback, delay, {
     condition: function() {
       var item = jQuery(this);
       return item.data('oldval') == item.val() || item.val().length < min_length;
