@@ -539,7 +539,7 @@ RecordSelect.Autocomplete = RecordSelect.Abstract.extend({
     if (this.options.label) this.set(this.options.label);
 
     this._respond_to_text_field(this.obj);
-    if (this.obj.focused) this.open(); // if it was focused before we could attach observers
+    if (this.obj.prop('focused')) this.open(); // if it was focused before we could attach observers
   },
 
   close: function() {
@@ -592,7 +592,7 @@ RecordSelect.Multiple = RecordSelect.Abstract.extend({
     }
 
     this._respond_to_text_field(this.obj);
-    if (this.obj.focused) this.open(); // if it was focused before we could attach observers
+    if (this.obj.prop('focused')) this.open(); // if it was focused before we could attach observers
   },
 
   onselect: function(id, value, text, item) {
